@@ -1,25 +1,34 @@
 {% set name = "rasterstats" %}
-{% set version = "0.20.0" %}
+{% set version = "0.21.0" %}
+{% set ignore_tests = "--ignore=tests/test_io.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_point.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_zonal.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
+{% set tests_to_skip = "test_csv or test_categorical_csv" %}
 
+# fiona._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/polygons.shp: No such file or directory
+# rasterio._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5b8ee775e815727767e0d359c03f3dd1c7840876d1d1d0c7a5a88ecf3e492938
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2b955f6775b7f641c8094d00bc4381492184ba162b5dba1baa69df8db98efa5f
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: true  # [py<37]
+  skip: true  # [py<39]
 
 requirements:
   host:
     - python
-    - setuptools >=61
     - pip
-    - wheel
+    - hatchling
   run:
     - python
     - shapely
@@ -29,18 +38,8 @@ requirements:
     - fiona
     - simplejson
     - affine
-    - click >7.1
-
-# fiona._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/polygons.shp: No such file or directory
-{% set ignore_tests = "--ignore=tests/test_io.py" %}
-# rasterio._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/slope.tif: No such file or directory
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_point.py" %}
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_zonal.py" %}
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
-{% set tests_to_skip = "test_csv or test_categorical_csv" %}
+    - click >7.1,!=8.2.1
+    - pyogrio
 
 test:
   source_files:
@@ -65,7 +64,7 @@ about:
   summary: Summarize geospatial raster datasets based on vector geometries
   description: |
     rasterstats is a Python module for summarizing geospatial raster datasets based on vector geometries.
-    It includes functions for zonal statistics and interpolated point queries. 
+    It includes functions for zonal statistics and interpolated point queries.
     The command-line interface allows for easy interoperability with other GeoJSON tools.
   doc_url: https://pythonhosted.org/rasterstats
   dev_url: https://github.com/perrygeo/python-rasterstats
