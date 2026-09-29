@@ -1,18 +1,8 @@
 {% set name = "rasterstats" %}
 {% set version = "0.21.0" %}
-{% set ignore_tests = "--ignore=tests/test_io.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_point.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_zonal.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
-{% set tests_to_skip = "test_csv or test_categorical_csv" %}
 
-# fiona._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/polygons.shp: No such file or directory
-# rasterio._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/slope.tif: No such file or directory
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
-# $SRC_DIR/tests/data/slope.tif: No such file or directory
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -31,15 +21,26 @@ requirements:
     - hatchling
   run:
     - python
-    - shapely
-    - numpy >=1.9
-    - rasterio >=1.0
-    - cligj >=0.4
-    - fiona
-    - simplejson
     - affine
     - click >7.1,!=8.2.1
+    - cligj >=0.4
+    - numpy >=1.9
     - pyogrio
+    - rasterio >=1.0
+    - simplejson
+    - shapely
+
+# fiona._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/polygons.shp: No such file or directory
+# rasterio._err.CPLE_OpenFailedError: $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
+# $SRC_DIR/tests/data/slope.tif: No such file or directory
+
+{% set ignore_tests = "--ignore=tests/test_io.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_point.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_zonal.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
+{% set tests_to_skip = "test_csv or test_categorical_csv" %}
 
 test:
   source_files:
@@ -51,7 +52,7 @@ test:
     - rio pointquery --help
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - pytest -v {{ignore_tests}} -k "not ({{ tests_to_skip }})" tests
+    - pytest -vv {{ignore_tests}} -k "not ({{ tests_to_skip }})" tests
   requires:
     - pip
     - pytest
@@ -73,3 +74,6 @@ extra:
   recipe-maintainers:
     - perrygeo
     - ocefpaf
+  skip-lints:
+    # doc_url is reachable
+    - reachable_url
